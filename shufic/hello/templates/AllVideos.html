@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block AllVideos %}
+
+<nav class="navbar navbar-expand-sm bg-light">
+    <ul class="navbar-nav">
+        {% if username %}
+            <li class="nav-item"><a href="/auth/logout/">Выйти {{ username }}</a> </li>
+        {% else %}
+            <li class="nav-item"><a href="/auth/login/">Войти {{ username }}</a> </li>
+        {% endif %}
+    </ul>
+</nav>
+
+<form action="{% url 'show_videos_url' %}" class="form-inline my-2 my-lg-0" method="GET">
+    <div class="input-group">
+        <input id="search" name="q" type="text" class="form-control" placeholder="Поиск">
+            <span class="input-group-btn">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Поиск</button>
+            </span>
+    </div>
+</form>
+
+    {% for video in page_object.object_list %}
+        <iframe width="776" height="437" src={{ video.Video_url  }} frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        <a href="/AllVideos/get/{{ video.id }}"><h1>{{ video.Video_name }}</h1></a>
+        <h3>{{ video.Video_properties }}</h3>
+        <h5>{{ video.Video_date }}</h5>
+        <h4>Video Likes {{ video.Video_likos }}</h4>
+    {% endfor %}
+
+{% if is_paginated %}
+ <nav aria-label="...">
+   <ul class="pagination">
+     <li class="page-item {% if not prev_url %} disabled {% endif %}">
+       <a class="page-link" href="{{ prev_url }}" tabindex="-1">Предыдущая</a>
+     </li>
+
+     {% for n in page_object.paginator.page_range %}
+         {% if page_object.number == n %}
+              <li class="page-item active">
+                <a class="page-link" href="?page={{ n }}">{{ n }} <span class="sr-only">(current)</span></a>
+              </li>
+         {% elif n > page_object.number|add:-3 and n < page_object.number|add:3 %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ n }}">{{ n }}</a>
+              </li>
+         {% endif %}
+     {% endfor %}
+
+     <li class="page-item {% if not next_url %} disabled {% endif %}">
+       <a class="page-link" href="{{ next_url }}" tabindex="-1">Следующая</a>
+     </li>
+   </ul>
+ </nav>
+{% endif %}
+
+
+{% endblock %}
+
